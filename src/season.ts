@@ -1,0 +1,6 @@
+import {Club,playMatch} from './game';
+export type Season={week:number;club:Club;table:{name:string;strength:number;points:number;gf:number;ga:number}[]};
+const clubs=['Lyg FC','Dakar United','Saint-Louis FC','Thies Athletic','Casamance SC','Kaolack FC','Saly Olympique','Touba FC'];
+export function newSeason():Season{return{week:1,club:{name:'Lyg FC',budget:42800000,fans:68420,reputation:78,points:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0},table:clubs.map((name,i)=>({name,strength:76+(i%4)*3,points:0,gf:0,ga:0}))}};
+export function advanceWeek(s:Season){const opp=s.table[(s.week)%s.table.length];const r=playMatch(s.club,opp.strength);s.week++;s.club.goalsFor+=r.home;s.club.goalsAgainst+=r.away;if(r.result==='win'){s.club.wins++;s.club.points+=3}else if(r.result==='draw'){s.club.draws++;s.club.points++}else s.club.losses++;const me=s.table.find(x=>x.name===s.club.name)!;me.points=s.club.points;me.gf=s.club.goalsFor;me.ga=s.club.goalsAgainst;return{...r,opponent:opp.name,week:s.week}};
+export function sortedTable(s:Season){return[...s.table].sort((a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga))}
